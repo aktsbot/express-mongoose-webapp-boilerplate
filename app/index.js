@@ -1,19 +1,40 @@
 import "dotenv/config";
 import express from "express";
+import path from "path";
 import nunjucks from "nunjucks";
+import cookieParser from "cookie-parser";
+import connectFlash from "connect-flash";
 
 import { connectDB, closeDB } from "./db.js";
 import config from "./config.js";
 import logger from "./logger.js";
 import httpLogger from "./middlewares/http-logger.middleware.js";
-import { deserializeUser } from "./middlewares/auth.middleware.js";
+import helpers from "./helpers.js";
 import {
   notFound,
   errorHandler,
 } from "./middlewares/error-handlers.middleware.js";
 import appRouter from "./routes/index.js";
 
+import { appSession } from "./session.js";
+
+// node 20.11 and up
+const __dirname = import.meta.dirname;
+
 const app = express();
+
+app.use(appSession());
+app.use(connectFlash());
+
+// thanks to wesbos
+// pass variables to our templates + all requests
+app.use((req, res, next) => {
+  res.locals.h = helpers;
+  res.locals.flashes = req.flash();
+  res.locals.user = req.session.user || null;
+  res.locals.currentPath = req.path;
+  next();
+});
 
 nunjucks.configure("app/views", {
   autoescape: true,
@@ -21,8 +42,10 @@ nunjucks.configure("app/views", {
 });
 
 app.use(express.json());
-app.use(deserializeUser);
+app.use(express.urlencoded({ extended: false }));
 app.use(httpLogger());
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
 
 // all routes for the app
 app.get("/", (req, res) => {
