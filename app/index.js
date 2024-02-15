@@ -40,6 +40,7 @@ nunjucks.configure("app/views", {
   autoescape: true,
   express: app,
 });
+app.set("view engine", "html");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
