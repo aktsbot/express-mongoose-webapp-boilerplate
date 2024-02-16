@@ -50,7 +50,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // all routes for the app
 app.get("/", (req, res) => {
-  return res.render("pages/index.html", {});
+  return res.render("pages/index.html", { title: "Hello world!" });
 });
 app.use("/api", appRouter);
 
