@@ -1,0 +1,13 @@
+{% if flashes %}
+<!-- start if -->
+{% for category, flash in flashes %}
+<!--for -->
+{% for message in flashes[category] %}
+<!-- div-->
+<div class="flash flash-{{category}}">{{ message }}</div>
+<!-- /div -->
+{% endfor %}
+<!-- for-->
+{% endfor %}
+<!-- endif -->
+{% endif %}

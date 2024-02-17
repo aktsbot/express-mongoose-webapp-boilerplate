@@ -8,7 +8,12 @@ import Session from "../models/session.model.js";
 
 // pages
 export const getLoginPage = (req, res) => {
-  return res.render("pages/login.html", { title: "Login" });
+  req.flash("error", ["Could not create post"]);
+  req.flash("success", ["All good on the western front!"]);
+  return res.render("pages/login.html", {
+    title: "Login",
+    flashes: req.flash(),
+  });
 };
 
 export const getSignupPage = (req, res) => {
