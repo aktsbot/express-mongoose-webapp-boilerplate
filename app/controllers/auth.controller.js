@@ -6,6 +6,18 @@ import { sendForgotPasswordEmail } from "../email.js";
 import User from "../models/user.model.js";
 import Session from "../models/session.model.js";
 
+// pages
+export const getLoginPage = (req, res) => {
+  return res.render("pages/login.html", { title: "Login" });
+};
+
+export const getSignupPage = (req, res) => {
+  return res.render("pages/signup.html", { title: "Signup" });
+};
+
+// page submissions
+// or normal webapi endpoints
+
 export const signupUser = async (req, res, next) => {
   try {
     const { body } = req.xop;

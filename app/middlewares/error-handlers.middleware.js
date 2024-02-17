@@ -1,7 +1,7 @@
 export const notFound = (req, res, next) => {
   next({
     status: 404,
-    message: "Resource not found",
+    message: "Resource or page not found",
   });
 };
 
@@ -11,9 +11,19 @@ export const errorHandler = (error, req, res, next) => {
   let errors = error.errors || [];
   let messageCode = error.messageCode || "";
 
-  return res.status(status).json({
+  if (error.isJSON) {
+    return res.status(status).json({
+      message,
+      errors,
+      messageCode,
+    });
+  }
+
+  return res.render("pages/error.html", {
+    title: `${status} - Error`,
     message,
     errors,
+    status,
     messageCode,
   });
 };

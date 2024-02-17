@@ -1,0 +1,20 @@
+<nav class="nav" tabindex="-1" onclick="this.focus()">
+  <div class="container">
+    <a class="pagename" href="/">{{ h.appName }}</a>
+    <!-- TODO: this could be a config object that we can iterate over -->
+    {% if user %}
+    <a href="/auth/logout">logout<small>(username)</small></a>
+    {% else %}
+    <a
+      class="{{ 'current' if h.currentPath == '/auth/login' else '' }}"
+      href="/auth/login"
+      >login</a
+    >
+    <a
+      class="{{ 'current' if h.currentPath == '/auth/signup' else '' }}"
+      href="/auth/signup"
+      >signup</a
+    >
+    {% endif %}
+  </div>
+</nav>

@@ -1,0 +1,20 @@
+{%extends "partials/layout.html"%}
+
+<!-- signup -->
+{% block content %}
+<h1>Create an account</h1>
+
+<form action="/auth/signup" method="POST">
+  <label for="fullName">Your name</label>
+  <input type="text" name="fullName" id="fullName" required />
+
+  <label for="email">Email</label>
+  <input type="email" name="email" id="email" required />
+
+  <label for="password">Password</label>
+  <input type="passsword" name="password" id="password" required />
+
+  <button class="btn" type="submit">Signup</button>
+</form>
+
+{% endblock %}

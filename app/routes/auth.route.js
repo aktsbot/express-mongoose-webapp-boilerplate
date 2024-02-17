@@ -11,6 +11,8 @@ import {
   updatePassword,
   forgotPassword,
   resetPassword,
+  getLoginPage,
+  getSignupPage,
 } from "../controllers/auth.controller.js";
 
 import {
@@ -24,6 +26,11 @@ import {
 
 const router = Router();
 
+// pages routes
+router.get("/login", getLoginPage);
+router.get("/signup", getSignupPage);
+
+// api or page submission routes
 router.post("/signup", validate(signupUserSchema), signupUser);
 router.post("/login", validate(loginUserSchema), loginUser);
 router.get("/user-info", requireUser, getUserInfo);

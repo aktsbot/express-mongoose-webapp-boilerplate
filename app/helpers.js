@@ -4,4 +4,5 @@ const appName = config.app_name;
 
 export default {
   appName,
+  isDev: config.env === "development",
 };

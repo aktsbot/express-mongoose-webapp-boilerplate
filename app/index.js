@@ -50,11 +50,7 @@ app.use(httpLogger());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-// all routes for the app
-app.get("/", (req, res) => {
-  return res.render("pages/index.html", { title: "Hello world!" });
-});
-app.use("/api", appRouter);
+app.use("/", appRouter);
 
 // if no route matches, let the error handler deal with the request
 app.use(notFound);
