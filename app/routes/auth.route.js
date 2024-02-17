@@ -1,7 +1,12 @@
 import { Router } from "express";
 
-import { validate } from "../middlewares/validate.middleware.js";
+import {
+  validate,
+  validatePageSubmission,
+} from "../middlewares/validate.middleware.js";
 import { requireUser } from "../middlewares/auth.middleware.js";
+
+import { routeMeta } from "./meta.js";
 
 import {
   loginUser,
@@ -31,8 +36,22 @@ router.get("/login", getLoginPage);
 router.get("/signup", getSignupPage);
 
 // api or page submission routes
-router.post("/signup", validate(signupUserSchema), signupUser);
-router.post("/login", validate(loginUserSchema), loginUser);
+router.post(
+  "/signup",
+  validatePageSubmission({
+    schema: signupUserSchema,
+    routeMeta: routeMeta["signup"],
+  }),
+  signupUser,
+);
+router.post(
+  "/login",
+  validatePageSubmission({
+    schema: signupUserSchema,
+    routeMeta: routeMeta["login"],
+  }),
+  loginUser,
+);
 
 router.get("/user-info", requireUser, getUserInfo);
 router.post("/token", validate(makeNewTokensSchema), makeNewTokens);

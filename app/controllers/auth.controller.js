@@ -1,5 +1,7 @@
 import logger from "../logger.js";
 
+import { routeMeta } from "../routes/meta.js";
+
 import { makeToken, verifyJWT } from "../jwt.js";
 import { sendForgotPasswordEmail } from "../email.js";
 
@@ -8,41 +10,42 @@ import Session from "../models/session.model.js";
 
 // pages
 export const getLoginPage = (req, res) => {
-  req.flash("error", ["Could not create post"]);
-  req.flash("success", ["All good on the western front!"]);
-  return res.render("pages/login.html", {
-    title: "Login",
-    flashes: req.flash(),
+  const meta = routeMeta["login"];
+
+  return res.render(meta.template, {
+    ...meta.meta,
   });
 };
 
 export const getSignupPage = (req, res) => {
-  return res.render("pages/signup.html", { title: "Signup" });
+  const meta = routeMeta["signup"];
+  return res.render(meta.template, {
+    ...meta.meta,
+  });
 };
 
 // page submissions
 // or normal webapi endpoints
 
 export const signupUser = async (req, res, next) => {
+  const meta = routeMeta["signup"];
+
   try {
     const { body } = req.xop;
     const userPresent = await User.findOne({ email: body.email }, { _id: 1 });
 
     if (userPresent) {
-      return next({
-        status: 409,
-        message: `User with email ${body.email} already exists`,
+      req.flash("error", [`User with email ${body.email} already exists`]);
+      return res.status(409).render(meta.template, {
+        ...meta.meta,
+        flashes: req.flash(),
       });
     }
 
-    const user = await new User({ ...body }).save();
+    await new User({ ...body }).save();
 
-    return res.json({
-      user: {
-        uuid: user.uuid,
-        email: user.email,
-      },
-    });
+    req.flash("success", [`Your account has been created. Please login.`]);
+    return res.redirect(301, "/auth/login");
   } catch (error) {
     next(error);
   }
