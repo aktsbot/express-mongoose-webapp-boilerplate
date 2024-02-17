@@ -36,10 +36,12 @@ app.use((req, res, next) => {
   next();
 });
 
-nunjucks.configure("app/views", {
+nunjucks.configure(path.join(__dirname, "views"), {
   autoescape: true,
   express: app,
+  noCache: config.env === "development", // this refreshes templates in dev mode
 });
+app.engine("html", nunjucks.render);
 app.set("view engine", "html");
 
 app.use(express.json());
