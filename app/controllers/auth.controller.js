@@ -39,6 +39,7 @@ export const signupUser = async (req, res, next) => {
       return res.status(409).render(meta.template, {
         ...meta.meta,
         flashes: req.flash(),
+        body,
       });
     }
 
