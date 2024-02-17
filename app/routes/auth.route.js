@@ -18,6 +18,7 @@ import {
   resetPassword,
   getLoginPage,
   getSignupPage,
+  getForgotPasswordPage,
 } from "../controllers/auth.controller.js";
 
 import {
@@ -34,6 +35,7 @@ const router = Router();
 // pages routes
 router.get("/login", getLoginPage);
 router.get("/signup", getSignupPage);
+router.get("/forgot-password", getForgotPasswordPage);
 
 // api or page submission routes
 router.post(
@@ -47,7 +49,7 @@ router.post(
 router.post(
   "/login",
   validatePageSubmission({
-    schema: signupUserSchema,
+    schema: loginUserSchema,
     routeMeta: routeMeta["login"],
   }),
   loginUser,

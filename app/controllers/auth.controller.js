@@ -9,7 +9,7 @@ import User from "../models/user.model.js";
 import Session from "../models/session.model.js";
 
 // pages
-export const getLoginPage = (req, res) => {
+export const getLoginPage = (_req, res) => {
   const meta = routeMeta["login"];
 
   return res.render(meta.template, {
@@ -17,8 +17,15 @@ export const getLoginPage = (req, res) => {
   });
 };
 
-export const getSignupPage = (req, res) => {
+export const getSignupPage = (_req, res) => {
   const meta = routeMeta["signup"];
+  return res.render(meta.template, {
+    ...meta.meta,
+  });
+};
+
+export const getForgotPasswordPage = (_req, res) => {
+  const meta = routeMeta["forgotPassword"];
   return res.render(meta.template, {
     ...meta.meta,
   });

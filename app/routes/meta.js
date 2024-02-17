@@ -13,4 +13,10 @@ export const routeMeta = {
       title: "Signup",
     },
   },
+  forgotPassword: {
+    template: "pages/forgot-password.html",
+    meta: {
+      title: "Forgot password?",
+    },
+  },
 };
