@@ -126,7 +126,11 @@ export const loginUser = async (req, res, next) => {
     };
 
     req.flash("success", [`Welcome back, ${userPresent.fullName}`]);
-    res.redirect("/");
+
+    // if the user was at a page before logging out, get them back to that page
+    res.redirect(req.session.returnTo || "/");
+    delete req.session.returnTo;
+    return;
   } catch (error) {
     next(error);
   }

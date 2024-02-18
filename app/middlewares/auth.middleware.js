@@ -40,7 +40,8 @@ export const requireUser = async (req, res, next) => {
   // sets res.locals.user from session.
   if (!res.locals.user) {
     req.flash("error", [`Sorry! You need to login.`]);
-    return res.status(403).redirect("/");
+    req.session.returnTo = req.originalUrl; // to redirect the user back to where they want to go after logging in.
+    return res.status(403).redirect("/auth/login");
   }
 
   return next();
