@@ -23,15 +23,6 @@ export const signupUserSchema = joi
   })
   .unknown(true);
 
-export const makeNewTokensSchema = joi
-  .object()
-  .keys({
-    body: joi.object().keys({
-      refreshToken: joi.string().required(),
-    }),
-  })
-  .unknown(true);
-
 export const updatePasswordSchema = joi
   .object()
   .keys({

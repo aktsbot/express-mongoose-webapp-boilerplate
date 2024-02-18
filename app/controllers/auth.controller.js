@@ -134,30 +134,20 @@ export const loginUser = async (req, res, next) => {
 
 export const updatePassword = async (req, res, next) => {
   try {
-    const user = { ...res.locals.user };
+    const user = res.locals.user;
     const { body } = req.xop;
 
     const userInfo = await User.findById(user._id);
 
     if (!(await userInfo.isValidPassword(body.oldPassword))) {
-      return next({
-        status: 400,
-        message: "Current password is invalid",
-      });
+      req.flash("error", [`Current password is incorrect.`]);
+      return res.redirect(req.get("referer"));
     }
 
     userInfo.password = body.newPassword;
     await userInfo.save();
 
-    await Session.deleteMany({ user: userInfo._id });
-
-    return res.send({
-      message: "New password has been set. Please login again",
-      messageCode: "RE_LOGIN",
-      user: {
-        uuid: user.uuid,
-      },
-    });
+    return res.redirect("/logout");
   } catch (error) {
     next(error);
   }

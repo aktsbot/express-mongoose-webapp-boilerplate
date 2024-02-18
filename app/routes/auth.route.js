@@ -14,6 +14,7 @@ import {
   signupUser,
   forgotPassword,
   resetPassword,
+  updatePassword,
 
   // pages --
   getLoginPage,
@@ -28,6 +29,7 @@ import {
   signupUserSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  updatePasswordSchema,
 } from "../validations/schemas/auth.schema.js";
 
 const router = Router();
@@ -71,6 +73,16 @@ router.post(
     routeMeta: routeMeta["resetPassword"],
   }),
   resetPassword,
+);
+router.post(
+  "/update-password",
+  loadUserSession,
+  requireUser,
+  validatePageSubmission({
+    schema: updatePasswordSchema,
+    routeMeta: routeMeta["profile"],
+  }),
+  updatePassword,
 );
 
 export default router;
