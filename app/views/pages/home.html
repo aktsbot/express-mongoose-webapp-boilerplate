@@ -1,0 +1,12 @@
+{%extends "partials/layout.html"%} 
+
+{% block content %}
+  <h1>Home is where the heart is</h1>
+
+  {% if user %}
+    <p>You are logged in as {{ user.fullName }}</p>
+  {% else %}
+    <p>You are not logged in :(</p>
+  {%endif%}
+
+{% endblock %}

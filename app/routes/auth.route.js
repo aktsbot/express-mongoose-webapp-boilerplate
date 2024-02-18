@@ -1,21 +1,15 @@
 import { Router } from "express";
 
-import {
-  validate,
-  validatePageSubmission,
-} from "../middlewares/validate.middleware.js";
-import { requireUser } from "../middlewares/auth.middleware.js";
+import { validatePageSubmission } from "../middlewares/validate.middleware.js";
+import { goHomeIfLoggedIn } from "../middlewares/auth.middleware.js";
 
 import { routeMeta } from "./meta.js";
 
 import {
   loginUser,
   signupUser,
-  getUserInfo,
-  makeNewTokens,
-  updatePassword,
-  forgotPassword,
-  resetPassword,
+
+  // pages --
   getLoginPage,
   getSignupPage,
   getForgotPasswordPage,
@@ -24,18 +18,14 @@ import {
 import {
   loginUserSchema,
   signupUserSchema,
-  makeNewTokensSchema,
-  updatePasswordSchema,
-  forgotPasswordSchema,
-  resetPasswordSchema,
 } from "../validations/schemas/auth.schema.js";
 
 const router = Router();
 
 // pages routes
-router.get("/login", getLoginPage);
-router.get("/signup", getSignupPage);
-router.get("/forgot-password", getForgotPasswordPage);
+router.get("/login", goHomeIfLoggedIn, getLoginPage);
+router.get("/signup", goHomeIfLoggedIn, getSignupPage);
+router.get("/forgot-password", goHomeIfLoggedIn, getForgotPasswordPage);
 
 // api or page submission routes
 router.post(
@@ -54,16 +44,5 @@ router.post(
   }),
   loginUser,
 );
-
-router.get("/user-info", requireUser, getUserInfo);
-router.post("/token", validate(makeNewTokensSchema), makeNewTokens);
-router.put(
-  "/password",
-  requireUser,
-  validate(updatePasswordSchema),
-  updatePassword,
-);
-router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
-router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
 
 export default router;

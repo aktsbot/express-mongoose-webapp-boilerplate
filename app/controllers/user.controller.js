@@ -1,7 +1,6 @@
 import logger from "../logger.js";
 
 import User from "../models/user.model.js";
-import Session from "../models/session.model.js";
 
 export const updateUserInfo = async (req, res, next) => {
   try {

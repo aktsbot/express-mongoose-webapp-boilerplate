@@ -2,11 +2,9 @@ import logger from "../logger.js";
 
 import { routeMeta } from "../routes/meta.js";
 
-import { makeToken, verifyJWT } from "../jwt.js";
 import { sendForgotPasswordEmail } from "../email.js";
 
 import User from "../models/user.model.js";
-import Session from "../models/session.model.js";
 
 // pages
 export const getLoginPage = (_req, res) => {
@@ -60,6 +58,8 @@ export const signupUser = async (req, res, next) => {
 };
 
 export const loginUser = async (req, res, next) => {
+  const meta = routeMeta["login"];
+
   try {
     const errorMessage = "Invalid email or password";
 
@@ -70,9 +70,11 @@ export const loginUser = async (req, res, next) => {
     );
 
     if (!userPresent) {
-      return next({
-        status: 401,
-        message: errorMessage,
+      req.flash("error", [errorMessage]);
+      return res.status(401).render(meta.template, {
+        ...meta.meta,
+        flashes: req.flash(),
+        body,
       });
     }
 
@@ -81,35 +83,20 @@ export const loginUser = async (req, res, next) => {
     logger.debug(`password valid ${isPasswordValid}`);
 
     if (!isPasswordValid) {
-      return next({
-        status: 401,
-        message: errorMessage,
+      req.flash("error", [errorMessage]);
+      return res.status(401).render(meta.template, {
+        ...meta.meta,
+        flashes: req.flash(),
+        body,
       });
     }
 
-    const session = await new Session({
-      user: userPresent._id,
-      isValid: true,
-    }).save();
-
-    // token - {session: 'uuid'}
-    const tokenPayload = {
-      session: session.uuid,
+    req.session.user = {
+      _id: userPresent._id,
     };
 
-    const accessToken = makeToken({
-      payload: tokenPayload,
-      type: "accessToken",
-    });
-    const refreshToken = makeToken({
-      payload: tokenPayload,
-      type: "refreshToken",
-    });
-
-    return res.json({
-      accessToken,
-      refreshToken,
-    });
+    req.flash("success", [`Welcome back, ${userPresent.fullName}`]);
+    res.redirect("/");
   } catch (error) {
     next(error);
   }
@@ -121,76 +108,6 @@ export const getUserInfo = (req, res, next) => {
     delete user._id;
 
     return res.json({ ...user });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const makeNewTokens = async (req, res, next) => {
-  // if a refresh token is sent, we return back a new access token and refresh token
-  // and invalidate the old session
-  try {
-    const { body } = req.xop;
-    const refreshToken = body.refreshToken;
-
-    if (!refreshToken) {
-      return next({
-        status: 403,
-        message: "Refresh token is not found.",
-      });
-    }
-
-    // refresh token must not have been expired too!
-    const { isExpired, decoded } = verifyJWT({
-      token: refreshToken,
-      tokenType: "refreshTokenPublicKey",
-    });
-
-    if (isExpired) {
-      return next({
-        status: 403,
-        messageCode: "REFRESH_TOKEN_JWT_EXPIRED",
-      });
-    }
-
-    const sessionInfo = await Session.findOne({
-      uuid: decoded.session,
-      isValid: true,
-    }).populate("user", "email fullName uuid _id");
-
-    if (!sessionInfo) {
-      return next({
-        status: 403,
-        message: "Session has expired or is no longer valid",
-      });
-    }
-
-    sessionInfo.isValid = false;
-    await sessionInfo.save();
-
-    const session = await new Session({
-      user: sessionInfo.user._id,
-      isValid: true,
-    }).save();
-
-    // token - {session: 'uuid'}
-    const tokenPayload = {
-      session: session.uuid,
-    };
-
-    const newAccessToken = makeToken({
-      payload: tokenPayload,
-      type: "accessToken",
-    });
-    const newRefreshToken = makeToken({
-      payload: tokenPayload,
-      type: "refreshToken",
-    });
-
-    return res.send({
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-    });
   } catch (error) {
     next(error);
   }

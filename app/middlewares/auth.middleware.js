@@ -1,70 +1,56 @@
-import { verifyJWT } from "../jwt.js";
 import logger from "../logger.js";
-import Session from "../models/session.model.js";
+import User from "../models/user.model.js";
 
-export const deserializeUser = (req, res, next) => {
-  const accessToken = (req.headers.authorization || "").replace(
-    /^Bearer\s/,
-    "",
-  );
+export const loadUserSession = async (req, res, next) => {
+  logger.debug(res.locals);
 
-  if (!accessToken) {
+  // look in app/index.js - session is loaded first and the first middleware
+  // sets res.locals.user from session.
+  if (!res.locals.user) {
     return next();
   }
 
-  const { isExpired, decoded } = verifyJWT({
-    token: accessToken,
-    tokenType: "accessTokenPublicKey",
-  });
-
-  if (decoded) {
-    res.locals.session = decoded;
-  }
-
-  res.locals.accessTokenExpired = isExpired;
-
-  return next();
-};
-
-export const requireUser = async (req, res, next) => {
-  logger.debug(res.locals);
-
-  if (res.locals.accessTokenExpired) {
-    return next({
-      status: 403,
-      message: "Login required for accessing resource",
-      messageCode: "ACCESS_TOKEN_JWT_EXPIRED",
-    });
-  }
-
-  const session = res.locals.session;
-
-  if (!session) {
-    return next({
-      status: 403,
-      message: "Login required for accessing resource",
-    });
-  }
-
   try {
-    const sessionInfo = await Session.findOne({
-      uuid: session.session,
-      isValid: true,
-    })
-      .populate("user", "email fullName uuid")
-      .lean();
+    const userInfo = await User.findById(res.locals.user, {
+      _id: 1,
+      email: 1,
+      fullName: 1,
+    });
 
-    if (!sessionInfo) {
-      return next({
-        status: 403,
-        message: "Session has expired or is no longer valid",
-      });
+    if (!userInfo) {
+      // something weird happened with the session.
+      // a session exists for a user who does not exist??
+      res.locals.user = null;
+      req.session.user = null;
+      return next();
     }
 
-    res.locals.user = sessionInfo.user;
+    // this is the actual mongoose doc instance,
+    // so we could change it and persist it to the database
+    res.locals.user = userInfo;
 
     return next();
   } catch (error) {
     next(error);
   }
+};
+
+export const requireUser = async (req, res, next) => {
+  // look in app/index.js - session is loaded first and the first middleware
+  // sets res.locals.user from session.
+  if (!res.locals.user) {
+    req.flash("error", [`Sorry! You need to login.`]);
+    return res.status(403).redirect("/");
+  }
+
+  return next();
+};
+
+// if user is logged in, they should not see the login or signup pages
+export const goHomeIfLoggedIn = (_req, res) => {
+  if (res.locals.user) {
+    return res.redirect("/");
+  }
+
+  return next();
 };
