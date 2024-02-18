@@ -29,6 +29,18 @@ export const getForgotPasswordPage = (_req, res) => {
   });
 };
 
+export const getResetPasswordPage = (req, res) => {
+  if (!req.query.userId || !req.query.resetCode) {
+    return res.redirect("/");
+  }
+  const meta = routeMeta["resetPassword"];
+  return res.render(meta.template, {
+    ...meta.meta,
+    userId: req.query.userId,
+    resetCode: req.query.resetCode,
+  });
+};
+
 export const getLogout = (req, res, next) => {
   req.session.destroy((err) => {
     if (err) {
@@ -195,27 +207,26 @@ export const resetPassword = async (req, res, next) => {
     });
 
     if (!userFound) {
-      return next({
-        status: 403,
-        message: "User not found",
-      });
+      req.flash("error", [`User not found`]);
+      return res.redirect(req.get("referer"));
     }
 
     // check if code has expired?
     if (!userFound.isResetCodeValid(body.resetCode)) {
-      return next({
-        status: 400,
-        message: "Password reset token is invalid or has been expired.",
-      });
+      req.flash("error", [
+        `Password reset token is invalid or has been expired. Please try a new reset.`,
+      ]);
+      return res.status(400).redirect("/auth/forgot-password");
     }
 
     userFound.password = body.password;
     userFound.clearReset();
     await userFound.save();
 
-    return res.send({
-      message: "Password updated successfully",
-    });
+    req.flash("success", [
+      `Password has been updated successfully. Please login.`,
+    ]);
+    return res.redirect("/auth/login");
   } catch (error) {
     next(error);
   }

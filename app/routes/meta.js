@@ -25,4 +25,10 @@ export const routeMeta = {
       title: "Home",
     },
   },
+  resetPassword: {
+    template: "pages/reset-password.html",
+    meta: {
+      title: "Reset password",
+    },
+  },
 };

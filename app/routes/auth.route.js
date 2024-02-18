@@ -9,17 +9,20 @@ import {
   loginUser,
   signupUser,
   forgotPassword,
+  resetPassword,
 
   // pages --
   getLoginPage,
   getSignupPage,
   getForgotPasswordPage,
+  getResetPasswordPage,
 } from "../controllers/auth.controller.js";
 
 import {
   loginUserSchema,
   signupUserSchema,
   forgotPasswordSchema,
+  resetPasswordSchema,
 } from "../validations/schemas/auth.schema.js";
 
 const router = Router();
@@ -28,6 +31,7 @@ const router = Router();
 router.get("/login", goHomeIfLoggedIn, getLoginPage);
 router.get("/signup", goHomeIfLoggedIn, getSignupPage);
 router.get("/forgot-password", goHomeIfLoggedIn, getForgotPasswordPage);
+router.get("/reset-password", goHomeIfLoggedIn, getResetPasswordPage);
 
 // api or page submission routes
 router.post(
@@ -53,6 +57,14 @@ router.post(
     routeMeta: routeMeta["forgotPassword"],
   }),
   forgotPassword,
+);
+router.post(
+  "/reset-password",
+  validatePageSubmission({
+    schema: resetPasswordSchema,
+    routeMeta: routeMeta["resetPassword"],
+  }),
+  resetPassword,
 );
 
 export default router;
