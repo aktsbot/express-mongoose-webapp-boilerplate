@@ -41,6 +41,14 @@ export const getResetPasswordPage = (req, res) => {
   });
 };
 
+export const getMyProfilePage = (_req, res) => {
+  const meta = routeMeta["profile"];
+  return res.render(meta.template, {
+    ...meta.meta,
+    userInfo: res.locals.user,
+  });
+};
+
 export const getLogout = (req, res, next) => {
   req.session.destroy((err) => {
     if (err) {
@@ -119,17 +127,6 @@ export const loginUser = async (req, res, next) => {
 
     req.flash("success", [`Welcome back, ${userPresent.fullName}`]);
     res.redirect("/");
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getUserInfo = (req, res, next) => {
-  try {
-    const user = { ...res.locals.user };
-    delete user._id;
-
-    return res.json({ ...user });
   } catch (error) {
     next(error);
   }

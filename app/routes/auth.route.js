@@ -1,7 +1,11 @@
 import { Router } from "express";
 
 import { validatePageSubmission } from "../middlewares/validate.middleware.js";
-import { goHomeIfLoggedIn } from "../middlewares/auth.middleware.js";
+import {
+  goHomeIfLoggedIn,
+  loadUserSession,
+  requireUser,
+} from "../middlewares/auth.middleware.js";
 
 import { routeMeta } from "./meta.js";
 
@@ -16,6 +20,7 @@ import {
   getSignupPage,
   getForgotPasswordPage,
   getResetPasswordPage,
+  getMyProfilePage,
 } from "../controllers/auth.controller.js";
 
 import {
@@ -32,6 +37,7 @@ router.get("/login", goHomeIfLoggedIn, getLoginPage);
 router.get("/signup", goHomeIfLoggedIn, getSignupPage);
 router.get("/forgot-password", goHomeIfLoggedIn, getForgotPasswordPage);
 router.get("/reset-password", goHomeIfLoggedIn, getResetPasswordPage);
+router.get("/profile", loadUserSession, requireUser, getMyProfilePage);
 
 // api or page submission routes
 router.post(

@@ -31,4 +31,10 @@ export const routeMeta = {
       title: "Reset password",
     },
   },
+  profile: {
+    template: "pages/profile.html",
+    meta: {
+      title: "My profile",
+    },
+  },
 };

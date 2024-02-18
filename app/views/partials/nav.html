@@ -3,15 +3,20 @@
     <a class="pagename" href="/">{{ h.appName }}</a>
     <!-- TODO: this could be a config object that we can iterate over -->
     {% if user %}
-    <a href="/logout">logout<small>({{ user.fullName }})</small></a>
+    <a
+      href="/auth/profile"
+      class="{{ 'current' if currentPath == '/auth/profile' else '' }}"
+      >{{ user.fullName }}'s profile</a
+    >
+    <a href="/logout">logout</a>
     {% else %}
     <a
-      class="{{ 'current' if h.currentPath == '/auth/login' else '' }}"
+      class="{{ 'current' if currentPath == '/auth/login' else '' }}"
       href="/auth/login"
       >login</a
     >
     <a
-      class="{{ 'current' if h.currentPath == '/auth/signup' else '' }}"
+      class="{{ 'current' if currentPath == '/auth/signup' else '' }}"
       href="/auth/signup"
       >signup</a
     >

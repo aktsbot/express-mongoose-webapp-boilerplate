@@ -1,0 +1,27 @@
+{%extends "partials/layout.html"%}
+
+<!-- profile page -->
+{% block content %}
+<h1>My profile</h1>
+
+<p>Full name: {{ userInfo.fullName }}</p>
+<p>Email: {{ userInfo.email }}</p>
+
+<h2>Update password</h2>
+
+<p>
+  Note: Please note that you'd be asked to login again after you've changed your
+  password.
+</p>
+
+<form action="/auth/update-password" method="POST">
+  <label for="oldPassword">Old password</label>
+  <input type="password" id="oldPassword" required name="oldPassword" />
+
+  <label for="newPassword">New password</label>
+  <input type="password" id="newPassword" required name="newPassword" />
+
+  <button class="btn" type="submit">Update password</button>
+</form>
+
+{% endblock %}
