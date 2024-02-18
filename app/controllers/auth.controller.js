@@ -162,10 +162,8 @@ export const forgotPassword = async (req, res, next) => {
     const userPresent = await User.findOne({ email: body.email });
 
     if (!userPresent) {
-      return next({
-        status: 200,
-        message,
-      });
+      req.flash("success", [message]);
+      return res.redirect(req.get("referer"));
     }
 
     userPresent.generateReset();
@@ -175,15 +173,14 @@ export const forgotPassword = async (req, res, next) => {
     logger.debug(userPresent.uuid);
     logger.debug(userPresent.passwordReset.code);
 
-    // TODO: send email
     await sendForgotPasswordEmail({
       to: body.email,
       resetCode: userPresent.passwordReset.code,
       userId: userPresent.uuid,
     });
-    return res.send({
-      message,
-    });
+
+    req.flash("success", [message]);
+    return res.redirect(req.get("referer")); // back to the page where the request came from
   } catch (error) {
     next(error);
   }

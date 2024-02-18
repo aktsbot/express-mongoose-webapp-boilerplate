@@ -8,6 +8,7 @@ import { routeMeta } from "./meta.js";
 import {
   loginUser,
   signupUser,
+  forgotPassword,
 
   // pages --
   getLoginPage,
@@ -18,6 +19,7 @@ import {
 import {
   loginUserSchema,
   signupUserSchema,
+  forgotPasswordSchema,
 } from "../validations/schemas/auth.schema.js";
 
 const router = Router();
@@ -43,6 +45,14 @@ router.post(
     routeMeta: routeMeta["login"],
   }),
   loginUser,
+);
+router.post(
+  "/forgot-password",
+  validatePageSubmission({
+    schema: forgotPasswordSchema,
+    routeMeta: routeMeta["forgotPassword"],
+  }),
+  forgotPassword,
 );
 
 export default router;
