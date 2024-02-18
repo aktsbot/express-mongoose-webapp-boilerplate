@@ -47,7 +47,7 @@ export const requireUser = async (req, res, next) => {
 };
 
 // if user is logged in, they should not see the login or signup pages
-export const goHomeIfLoggedIn = (_req, res) => {
+export const goHomeIfLoggedIn = (_req, res, next) => {
   if (res.locals.user) {
     return res.redirect("/");
   }

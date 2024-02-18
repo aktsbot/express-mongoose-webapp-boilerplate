@@ -29,6 +29,16 @@ export const getForgotPasswordPage = (_req, res) => {
   });
 };
 
+export const getLogout = (req, res, next) => {
+  req.session.destroy((err) => {
+    if (err) {
+      next(err);
+      return;
+    }
+    return res.redirect("/");
+  });
+};
+
 // page submissions
 // or normal webapi endpoints
 
