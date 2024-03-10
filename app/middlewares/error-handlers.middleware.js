@@ -19,6 +19,7 @@ export const errorHandler = (error, req, res, next) => {
     });
   }
 
+  res.send(status);
   return res.render("pages/error.html", {
     title: `${status} - Error`,
     message,
